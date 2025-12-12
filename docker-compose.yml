@@ -11,6 +11,7 @@ services:
       TZ: Europe/Madrid
       CUSTOM_USER: ${KALI_USER:-admin}
       PASSWORD: ${KALI_PASSWORD}
+      CUSTOM_RES: ${CUSTOM_RES:-1920x1080}
     volumes:
       - kali_config:/config
     shm_size: "1gb"

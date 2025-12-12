@@ -259,11 +259,33 @@ docker cp kali-linux:/config/Documents/reporte.pdf ./
 
 ### Cambiar resolución del escritorio
 
-Edita `docker-compose.yml` y añade:
+**Problema común en Mac**: Las pantallas Retina detectan resoluciones muy altas (4464x2008) que hacen que todo se vea muy pequeño.
+
+**Solución**: Fija una resolución específica editando las variables de entorno.
+
+En Portainer, añade/edita la variable:
+
+```env
+CUSTOM_RES=1920x1080
+```
+
+O edita `docker-compose.yml`:
 
 ```yaml
 environment:
-  CUSTOM_RES: 1920x1080
+  CUSTOM_RES: 1920x1080  # Recomendada para Mac
+```
+
+**Resoluciones recomendadas para Mac:**
+- `1920x1080` - Full HD (óptima para la mayoría)
+- `1680x1050` - MacBook Pro 15" (2015 y anteriores)
+- `1440x900` - MacBook Air 13"
+- `2560x1440` - QHD (si tienes pantalla grande)
+- `1280x720` - HD (si la conexión es lenta)
+
+Después de cambiar, reinicia el stack:
+```bash
+docker restart kali-linux
 ```
 
 ### Habilitar audio
@@ -494,7 +516,7 @@ Mantén actualizado:
 | `TZ` | No | `Europe/Madrid` | Zona horaria |
 | `CUSTOM_USER` | No | `abc` | Usuario personalizado |
 | `PASSWORD` | **Sí** | - | Contraseña de acceso web |
-| `CUSTOM_RES` | No | `1280x720` | Resolución del escritorio |
+| `CUSTOM_RES` | No | `1280x720` | Resolución del escritorio. Mac Retina: usar `1920x1080` |
 | `KEYBOARD` | No | `en-us-qwerty` | Layout del teclado |
 | `TITLE` | No | `Kali Linux` | Título de la ventana |
 | `DOMAIN_HOST` | Traefik | - | Dominio para acceso HTTPS |
