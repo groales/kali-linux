@@ -1,0 +1,20 @@
+services:
+  kali-linux:
+    container_name: kali-linux
+    image: lscr.io/linuxserver/kali-linux:latest
+    restart: unless-stopped
+    security_opt:
+      - seccomp:unconfined
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/Madrid
+      CUSTOM_USER: ${KALI_USER:-admin}
+      PASSWORD: ${KALI_PASSWORD}
+    volumes:
+      - kali_config:/config
+    shm_size: "1gb"
+
+volumes:
+  kali_config:
+    name: kali_config

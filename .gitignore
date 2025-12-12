@@ -1,0 +1,7 @@
+# Environment variables
+.env
+
+# Docker override (se usa el .example)
+docker-compose.override.yml
+docker-compose.override.traefik.yml
+docker-compose.override.npm.yml
