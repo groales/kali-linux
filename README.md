@@ -42,78 +42,76 @@ Guarda el resultado, lo necesitarás en el archivo `.env`.
 
 ---
 
-## Despliegue con Portainer
+## Despliegue con Docker Compose
 
-### Opción A: Git Repository (Recomendada)
-
-1. En Portainer, ve a **Stacks** → **Add stack**
-2. Nombra el stack: `kali-linux`
-3. Selecciona **Git Repository**
-4. Configura:
-   - **Repository URL**: `https://git.ictiberia.com/groales/kali-linux`
-   - **Repository reference**: `refs/heads/main`
-   - **Compose path**: `docker-compose.yml`
-5. **Solo para Traefik**: En **Additional paths**, añade:
-   - `docker-compose.override.traefik.yml.example`
-6. En **Environment variables**, añade:
-
-```env
-KALI_USER=admin
-KALI_PASSWORD=tu_password_generado
-DOMAIN_HOST=kali.tudominio.com
-```
-
-7. Click en **Deploy the stack**
-8. Espera 1-2 minutos mientras se inicia el escritorio
-
-### Opción B: Web editor
-
-1. En Portainer, ve a **Stacks** → **Add stack**
-2. Nombra el stack: `kali-linux`
-3. Selecciona **Web editor**
-4. Pega el contenido de `docker-compose.yml`
-5. En **Environment variables**, añade las variables de la Opción A
-6. Click en **Deploy the stack**
-
----
-
-## Despliegue con Docker CLI
-
-### 1. Clonar el repositorio
+### 1. Crear Directorio y Archivos
 
 ```bash
-git clone https://git.ictiberia.com/groales/kali-linux.git
+# Crear directorio
+mkdir kali-linux
 cd kali-linux
 ```
 
-### 2. Generar contraseña
+### 2. Crear docker-compose.yml
 
-```bash
-# KALI_PASSWORD
-openssl rand -base64 32
+Crea el archivo `docker-compose.yml`:
+
+```yaml
+services:
+  kali-linux:
+    image: lscr.io/linuxserver/kali-linux:latest
+    container_name: kali-linux
+    restart: unless-stopped
+    security_opt:
+      - seccomp:unconfined
+    ports:
+      - 3000:3000
+      - 3001:3001
+    volumes:
+      - config:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+      - KALI_USER=${KALI_USER}
+      - KALI_PASSWORD=${KALI_PASSWORD}
+
+volumes:
+  config:
+
+networks:
+  default:
+    external: true
+    name: proxy
 ```
 
-### 3. Configurar variables de entorno
+### 3. Configurar Variables de Entorno
 
-```bash
-cp .env.example .env
-nano .env
-```
-
-Edita el archivo `.env`:
+Crea el archivo `.env`:
 
 ```env
+# Usuario y contraseña
 KALI_USER=admin
 KALI_PASSWORD=password_generado_anteriormente
+
+# Dominio (para Traefik)
 DOMAIN_HOST=kali.tudominio.com
 ```
 
-### 4. Configurar proxy inverso
+### 4. (Opcional) Configurar Traefik
 
-#### Con Traefik
+Si usas Traefik, crea `docker-compose.override.yml`:
 
-```bash
-cp docker-compose.override.traefik.yml.example docker-compose.override.yml
+```yaml
+services:
+  kali-linux:
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.kali-linux.rule=Host(`${DOMAIN_HOST}`)
+      - traefik.http.routers.kali-linux.entrypoints=websecure
+      - traefik.http.routers.kali-linux.tls.certresolver=letsencrypt
+      - traefik.http.routers.kali-linux.middlewares=ip-allowlist@file
+      - traefik.http.services.kali-linux.loadbalancer.server.port=3000
 ```
 
 ⚠️ **CRÍTICO**: Verifica que tienes configurado el middleware `ip-allowlist@file` en Traefik:
@@ -131,27 +129,45 @@ http:
           - "192.168.0.0/16"    # Red privada clase C
 ```
 
-#### Sin proxy (acceso directo)
-
-No copies ningún override. Acceso directo en:
-- HTTP: `http://localhost:3000`
-- HTTPS: `https://localhost:3001` (certificado autofirmado)
-
 ### 5. Desplegar
 
 ```bash
+# Crear red proxy si no existe
+docker network create proxy
+
+# Iniciar servicios
 docker compose up -d
-```
 
-### 6. Verificar logs
-
-```bash
+# Ver logs
 docker compose logs -f kali-linux
 ```
 
 Deberías ver:
 ```
 [init] done.
+```
+
+---
+
+## Método Alternativo: Clonar desde Git
+
+Si prefieres usar Git para mantener la configuración actualizada:
+
+```bash
+# Clonar repositorio
+git clone https://git.ictiberia.com/groales/kali-linux.git
+cd kali-linux
+
+# Copiar y editar variables
+cp .env.example .env
+nano .env
+
+# Para Traefik
+cp docker-compose.override.traefik.yml.example docker-compose.override.yml
+
+# Desplegar
+docker network create proxy
+docker compose up -d
 ```
 
 ---
