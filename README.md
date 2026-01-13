@@ -59,26 +59,23 @@ Crea el archivo `docker-compose.yml`:
 ```yaml
 services:
   kali-linux:
-    image: lscr.io/linuxserver/kali-linux:latest
     container_name: kali-linux
+    image: lscr.io/linuxserver/kali-linux:latest
     restart: unless-stopped
     security_opt:
       - seccomp:unconfined
-    ports:
-      - 3000:3000
-      - 3001:3001
-    volumes:
-      - config:/config
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Madrid
-      - KALI_USER=${KALI_USER}
-      - KALI_PASSWORD=${KALI_PASSWORD}
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/Madrid
+      CUSTOM_USER: ${KALI_USER:-admin}
+      PASSWORD: ${KALI_PASSWORD}
+      CUSTOM_RES: ${CUSTOM_RES:-1920x1080}
+    volumes:
+      - kali_config:/config
+    shm_size: "1gb"
 
-volumes:
-  config:
-
+# añadir estas líneas al final del archivo para proxy inverso 
 networks:
   default:
     external: true
