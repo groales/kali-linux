@@ -1,7 +1,5 @@
 services:
   kali-linux:
-    networks:
-      - proxy
     labels:
       - traefik.enable: "true"
       - traefik.http.routers.kali.rule: Host(`${DOMAIN_HOST}`)
@@ -11,5 +9,6 @@ services:
       - traefik.http.routers.kali.middlewares: ip-allowlist@file
 
 networks:
-  proxy:
+  default:
     external: true
+    name: proxy
