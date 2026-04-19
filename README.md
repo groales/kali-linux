@@ -52,9 +52,9 @@ mkdir kali-linux
 cd kali-linux
 ```
 
-### 2. Crear docker-compose.yml
+### 2. Crear compose.yaml
 
-Crea el archivo `docker-compose.yml`:
+Crea el archivo `compose.yaml`:
 
 ```yaml
 services:
@@ -101,7 +101,7 @@ DOMAIN_HOST=kali.tudominio.com
 
 ### 4. (Opcional) Configurar Traefik
 
-Si usas Traefik, crea `docker-compose.override.yml`:
+Si usas Traefik, crea `compose.override.yaml`:
 
 ```yaml
 services:
@@ -164,7 +164,7 @@ cp .env.example .env
 nano .env
 
 # Para Traefik
-cp docker-compose.override.traefik.yml.example docker-compose.override.yml
+cp docker-compose.override.traefik.yml.example compose.override.yaml
 
 # Desplegar
 docker network create proxy
@@ -286,7 +286,7 @@ En Portainer, añade/edita la variable:
 CUSTOM_RES=1920x1080
 ```
 
-O edita `docker-compose.yml`:
+O edita `compose.yaml`:
 
 ```yaml
 environment:
@@ -307,7 +307,7 @@ docker restart kali-linux
 
 ### Habilitar audio
 
-Añade en `docker-compose.yml`:
+Añade en `compose.yaml`:
 
 ```yaml
 devices:
@@ -434,7 +434,7 @@ docker compose up -d
 
 **Verificar `seccomp:unconfined`:**
 
-Algunas herramientas necesitan esta opción en `docker-compose.yml`:
+Algunas herramientas necesitan esta opción en `compose.yaml`:
 ```yaml
 security_opt:
   - seccomp:unconfined
