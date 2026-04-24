@@ -17,7 +17,6 @@ Entorno Kali Linux completo accesible vía escritorio web (KasmVNC). Incluye tod
 ### Recomendaciones obligatorias:
 
 1. **NUNCA expongas directamente a Internet sin protección**
-2. **Usa `ip-allowlist` middleware** en Traefik (solo red local/VPN)
 3. **Cambia la contraseña por defecto** inmediatamente
 4. **Considera usar VPN/Wireguard** para acceso remoto seguro
 5. **Revisa logs regularmente** para detectar accesos no autorizados
@@ -28,7 +27,6 @@ Entorno Kali Linux completo accesible vía escritorio web (KasmVNC). Incluye tod
 - Docker Engine instalado
 - Portainer configurado (recomendado)
 - **Mínimo 2GB RAM** (4GB recomendado para uso intensivo)
-- **Para Traefik**: Red Docker `proxy` creada + middleware `ip-allowlist@file` configurado
 - **Contraseña generada**: KALI_PASSWORD
 
 ## Generar Contraseña
@@ -95,30 +93,19 @@ Crea el archivo `.env`:
 KALI_USER=admin
 KALI_PASSWORD=password_generado_anteriormente
 
-# Dominio (para Traefik)
 DOMAIN_HOST=kali.tudominio.com
 ```
 
-### 4. (Opcional) Configurar Traefik
 
-Si usas Traefik, crea `compose.override.yaml`:
 
 ```yaml
 services:
   kali-linux:
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.kali-linux.rule=Host(`${DOMAIN_HOST}`)
-      - traefik.http.routers.kali-linux.entrypoints=websecure
-      - traefik.http.routers.kali-linux.tls.certresolver=letsencrypt
-      - traefik.http.routers.kali-linux.middlewares=ip-allowlist@file
-      - traefik.http.services.kali-linux.loadbalancer.server.port=3000
 ```
 
-⚠️ **CRÍTICO**: Verifica que tienes configurado el middleware `ip-allowlist@file` en Traefik:
 
 ```yaml
-# traefik/dynamic/config.yml
 http:
   middlewares:
     ip-allowlist:
@@ -163,8 +150,6 @@ cd kali-linux
 cp .env.example .env
 nano .env
 
-# Para Traefik
-cp docker-compose.override.traefik.yml.example compose.override.yaml
 
 # Desplegar
 docker network create proxy
@@ -175,7 +160,6 @@ docker compose up -d
 
 ## Primer Acceso
 
-### Con Traefik
 
 Accede a: `https://kali.tudominio.com`
 
@@ -469,11 +453,9 @@ docker stats kali-linux
 **Reducir herramientas ejecutándose:**
 Cierra aplicaciones no usadas en el escritorio.
 
-### Error de conexión Traefik
 
 **Verificar middleware IP allowlist:**
 ```bash
-docker exec traefik cat /etc/traefik/dynamic/config.yml | grep -A10 ip-allowlist
 ```
 
 **Verificar red proxy:**
@@ -481,9 +463,7 @@ docker exec traefik cat /etc/traefik/dynamic/config.yml | grep -A10 ip-allowlist
 docker network inspect proxy
 ```
 
-**Logs de Traefik:**
 ```bash
-docker logs traefik | grep kali
 ```
 
 ---
@@ -499,7 +479,6 @@ services:
   kali-linux:
     networks:
       - kali_isolated
-      - proxy  # Solo si necesitas Traefik
 
 networks:
   kali_isolated:
@@ -536,7 +515,6 @@ Mantén actualizado:
 | `CUSTOM_RES` | No | `1280x720` | Resolución del escritorio. Mac Retina: usar `1920x1080` |
 | `KEYBOARD` | No | `en-us-qwerty` | Layout del teclado |
 | `TITLE` | No | `Kali Linux` | Título de la ventana |
-| `DOMAIN_HOST` | Traefik | - | Dominio para acceso HTTPS |
 
 ---
 
