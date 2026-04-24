@@ -25,7 +25,6 @@ Entorno Kali Linux completo accesible vía escritorio web (KasmVNC). Incluye tod
 ## Requisitos Previos
 
 - Docker Engine instalado
-- Portainer configurado (recomendado)
 - **Mínimo 2GB RAM** (4GB recomendado para uso intensivo)
 - **Contraseña generada**: KALI_PASSWORD
 
@@ -264,7 +263,6 @@ docker cp kali-linux:/config/Documents/reporte.pdf ./
 
 **Solución**: Fija una resolución específica editando las variables de entorno.
 
-En Portainer, añade/edita la variable:
 
 ```env
 CUSTOM_RES=1920x1080
