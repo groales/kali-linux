@@ -69,12 +69,8 @@ services:
       PASSWORD: ${KALI_PASSWORD}
       CUSTOM_RES: ${CUSTOM_RES:-1920x1080}
     volumes:
-      - kali_config:/config
+      - ./config:/config
     shm_size: "1gb"
-
-volumes:
-  kali_config:
-    name: kali_config
     
 # añadir estas líneas al final del archivo para proxy inverso 
 networks:

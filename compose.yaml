@@ -13,12 +13,12 @@ services:
       PASSWORD: ${KALI_PASSWORD}
       CUSTOM_RES: ${CUSTOM_RES:-1920x1080}
     volumes:
-      - kali_config:/config
+      - ./config:/config
+    #Puertos expuestos para acceso directo (opcional, se recomienda usar proxy inverso)  
+    #ports:
+    #  - 3000:3000
+    #  - 3001:3001
     shm_size: "1gb"
-
-volumes:
-  kali_config:
-    name: kali_config
     
 # añadir estas líneas al final del archivo para proxy inverso 
 networks:
